@@ -26,13 +26,13 @@ const UserSchema = new Schema({
         index : true
     },
     avatar:{
-        type : String,
+        type : String, //cloudinary url
         required :  true,
     },
     coverImage:{
         type : String,
     },
-    watchHistory:[{   // for this we will use mongoose-aggregate-paginate
+    watchHistory:[{   //it's an array, for this we will use mongoose-aggregate-paginate
         type : Schema.Types.ObjectId,
         ref :"Video"
     }],

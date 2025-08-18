@@ -11,10 +11,13 @@ dotenv.config({
     path:'./env'
 })
 
+console.log('MONGODB_URL:', process.env.MONGODB_URL);
 
 
 connectDB().then(()=>{
-    app.listen(process.env.PORT || 80)
+    app.listen(process.env.PORT || 80, ()=>{
+        console.log(`server is running at port ${process.env.PORT}`)
+    })
 }
 )
 .catch((err)=>{
