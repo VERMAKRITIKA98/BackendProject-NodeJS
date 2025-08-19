@@ -24,4 +24,14 @@ app.use(express.static("public")) //public folder name
 // to access and store the cookies of user  -----generally no need of it.
 app.use(cookieParser())
 
+
+//import route
+import userRouter from './routes/user.routes.js';
+//router declaration -  Since we have defined the controller and router in different folder and files we nned to use middleware otherWise if I've defined in app.js file then we can directly use it by get method.
+// Example - app.get('/signIn)
+app.use('/api/v1/users', userRouter);
+// Example - https://localhost:8000/api/v1/users/login, https://localhost:8000/api/v1/users/register
+
+
+
 export {app}

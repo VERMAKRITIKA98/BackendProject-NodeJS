@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { DB_NAME } from "../constants.js";//will give error if not specify the file extension
 
+console.log("Mongo URL:", process.env.MONGODB_URL);
 
 
 const connectDB = async ()=>{
