@@ -46,9 +46,10 @@ const UserSchema = new Schema({
 }, {timestamps:true})
 
 //it will save by default whenever user save but we only want to hash only save password
-if(this.isModified("password"))
+// if(this.isModified("password"))
 UserSchema.pre("save", async function(next){
-    this.password =bcrypt.hash(this.password, 10)  //10 rounds
+    if(this.isModified("password")) return next();
+    this.password = await bcrypt.hash(this.password, 10)  //10 rounds
     next()
 })
 
