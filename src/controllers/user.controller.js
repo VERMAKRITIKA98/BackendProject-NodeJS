@@ -4,6 +4,21 @@ import { User } from '../models/user.model.js';
 import { uploadFileOnCloudinary } from '../utils/cloudinary.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 
+
+const generateAccessAndRefreshToken = async(userId)=>{
+  try {
+    const user = await User.findById(userId);
+    const refreshToken = User.generateAccessToken()
+    const accessToken = User.generateAccessToken();
+    user.refreshtoken = refreshToken;
+    await user.save({validateBeforeSave:false});
+    return {refreshToken, accessToken};
+  } catch (error) {
+    throw new ApiError(500, "Something went wrong not able to generate access token adn refresh token");
+  }
+}
+
+
 const registerUser = asyncHandler(async(req, res)=>{
   // -----steps to follow-------------
   // get user details from frontend
@@ -18,8 +33,7 @@ const registerUser = asyncHandler(async(req, res)=>{
 
 
   // if data coming from a form or object can find from req.body
-  const {fullName, email, password}=req.body
-  const userName = req.body.userName || req.body.username;
+  const {fullName, email, userName, password}=req.body
   // if(fullname===""){
   //   throw new ApiError(400, "fullname is required");
   // }
@@ -59,7 +73,7 @@ const registerUser = asyncHandler(async(req, res)=>{
     coverImage: coverImage?.url,
     email,
     password,
-    username: userName.toLowerCase()
+    userName
   })
   
 
@@ -75,6 +89,31 @@ const registerUser = asyncHandler(async(req, res)=>{
   // res.status(200).json({
   //   messsage: "ok"
   // })  
+})
+
+const loginUSer = asyncHandler(async(req, res)=>{
+  // Steps-----------------------
+  // req body --> what data is coming
+  // check based on username or email
+  // password check
+  // After password checking generate access token and refresh token
+  // send token in secure cookies
+  const { userName, email, password } = req.body
+
+  if(!userName || !email){
+    throw new ApiError(400, 'userName or Emaill is required.')
+  }
+
+  const userExist = await User.findOne({
+    $or : [{ userName }, { email }]
+  })
+  if(!userExist){
+    throw new ApiError(404, "user not found")
+  }
+  const isPassWordValiid = await userExist.isPasswordCorrect(password);
+  if(!isPassWordValiid){
+    throw new ApiError(401, "Invalid user credentials");
+  }
 })
 
 export{
